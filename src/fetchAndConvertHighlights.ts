@@ -19,9 +19,34 @@ const getLastSyncDateFromFile = (timestampFileName: string) => {
 }
 
 const shouldBookmarkSync = (bookmark: DiigoBookmark, lastSyncDate: Date | undefined) => {
+  if (!bookmark.annotations.length) return false;
   if (!lastSyncDate) return true;
   const DiigoUpdatedAt = new Date(bookmark.updated_at);
   return DiigoUpdatedAt > lastSyncDate;
+}
+
+const fetchAllBookmarks = async ({
+  diigoApiKey,
+  diigoUsername,
+  diigoPassword,
+  diigoFilterTags,
+}: Omit<fetchAndConvertHighlightsArgObject, 'readwiseToken' | 'timestampFileName'>) => {
+  let page = 0;
+  const resultsPerPage = 100;
+  let allBookmarks: DiigoBookmark[] = [];
+  while (true) {
+    let start = page * resultsPerPage;
+    const diigoResponse = await fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=${resultsPerPage}&user=${diigoUsername}&filter=all&sort=1&tags=${diigoFilterTags}&start=${start}`, {
+      headers: {
+        Authorization: `Basic ${base64.encode(`${diigoUsername}:${diigoPassword}`)}`,
+      },
+    })
+    const diigoBookmarks: DiigoBookmark[] = await diigoResponse.json();
+    if (!diigoBookmarks.length) break;
+    allBookmarks = allBookmarks.concat(diigoBookmarks);
+    page++;
+  }
+  return allBookmarks;
 }
 
 interface fetchAndConvertHighlightsArgObject {
@@ -43,12 +68,12 @@ export const fetchAndConvertHighlights = async ({
 }: fetchAndConvertHighlightsArgObject) => {
   const currentSyncDate = Date();
   const lastSyncDate = await getLastSyncDateFromFile(timestampFileName)
-  const diigoResponse = await fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=${diigoFilterTags}`, {
-    headers: {
-      Authorization: `Basic ${base64.encode(`${diigoUsername}:${diigoPassword}`)}`,
-    },
+  const diigoBookmarks = await fetchAllBookmarks({
+    diigoApiKey,
+    diigoUsername,
+    diigoPassword,
+    diigoFilterTags,
   })
-  const diigoBookmarks: DiigoBookmark[] = await diigoResponse.json();
   const filteredDiigoBookmarks = diigoBookmarks.filter(bookmark => shouldBookmarkSync(bookmark, lastSyncDate));
   const highlights: ReadwiseHighlight[] = filteredDiigoBookmarks.map(convertDiigoBookmarksToHighlights).reduce((array, currentValue) => array.concat(currentValue), []);
   if (!highlights.length) return fsPromises.writeFile(timestampFileName, currentSyncDate)

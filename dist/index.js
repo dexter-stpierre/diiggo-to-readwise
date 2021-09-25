@@ -84,23 +84,28 @@ var getLastSyncDateFromFile = function (timestampFileName) {
     });
 };
 var shouldBookmarkSync = function (bookmark, lastSyncDate) {
+    if (!bookmark.annotations.length)
+        return false;
     if (!lastSyncDate)
         return true;
     var DiigoUpdatedAt = new Date(bookmark.updated_at);
     return DiigoUpdatedAt > lastSyncDate;
 };
-var fetchAndConvertHighlights = function (_a) {
-    var diigoApiKey = _a.diigoApiKey, diigoUsername = _a.diigoUsername, diigoPassword = _a.diigoPassword, readwiseToken = _a.readwiseToken, timestampFileName = _a.timestampFileName;
+var fetchAllBookmarks = function (_a) {
+    var diigoApiKey = _a.diigoApiKey, diigoUsername = _a.diigoUsername, diigoPassword = _a.diigoPassword, diigoFilterTags = _a.diigoFilterTags;
     return __awaiter(void 0, void 0, void 0, function () {
-        var currentSyncDate, lastSyncDate, diigoResponse, diigoBookmarks, filteredDiigoBookmarks, highlights;
+        var page, resultsPerPage, allBookmarks, start, diigoResponse, diigoBookmarks;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    currentSyncDate = Date();
-                    return [4 /*yield*/, getLastSyncDateFromFile(timestampFileName)];
+                    page = 0;
+                    resultsPerPage = 100;
+                    allBookmarks = [];
+                    _b.label = 1;
                 case 1:
-                    lastSyncDate = _b.sent();
-                    return [4 /*yield*/, (0, node_fetch_1.default)("https://secure.diigo.com/api/v2/bookmarks?key=" + diigoApiKey + "&count=100&user=" + diigoUsername + "&filter=all&sort=1&tags=test", {
+                    if (false) {}
+                    start = page * resultsPerPage;
+                    return [4 /*yield*/, (0, node_fetch_1.default)("https://secure.diigo.com/api/v2/bookmarks?key=" + diigoApiKey + "&count=" + resultsPerPage + "&user=" + diigoUsername + "&filter=all&sort=1&tags=" + diigoFilterTags + "&start=" + start, {
                             headers: {
                                 Authorization: "Basic " + base_64_1.default.encode(diigoUsername + ":" + diigoPassword),
                             },
@@ -110,18 +115,53 @@ var fetchAndConvertHighlights = function (_a) {
                     return [4 /*yield*/, diigoResponse.json()];
                 case 3:
                     diigoBookmarks = _b.sent();
+                    if (!diigoBookmarks.length)
+                        return [3 /*break*/, 4];
+                    allBookmarks = allBookmarks.concat(diigoBookmarks);
+                    page++;
+                    return [3 /*break*/, 1];
+                case 4: return [2 /*return*/, allBookmarks];
+            }
+        });
+    });
+};
+var fetchAndConvertHighlights = function (_a) {
+    var diigoApiKey = _a.diigoApiKey, diigoUsername = _a.diigoUsername, diigoPassword = _a.diigoPassword, diigoFilterTags = _a.diigoFilterTags, readwiseToken = _a.readwiseToken, timestampFileName = _a.timestampFileName;
+    return __awaiter(void 0, void 0, void 0, function () {
+        var currentSyncDate, lastSyncDate, diigoBookmarks, filteredDiigoBookmarks, highlights, readwiseResponse, readwiseBody;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    currentSyncDate = Date();
+                    return [4 /*yield*/, getLastSyncDateFromFile(timestampFileName)];
+                case 1:
+                    lastSyncDate = _b.sent();
+                    return [4 /*yield*/, fetchAllBookmarks({
+                            diigoApiKey: diigoApiKey,
+                            diigoUsername: diigoUsername,
+                            diigoPassword: diigoPassword,
+                            diigoFilterTags: diigoFilterTags,
+                        })];
+                case 2:
+                    diigoBookmarks = _b.sent();
                     filteredDiigoBookmarks = diigoBookmarks.filter(function (bookmark) { return shouldBookmarkSync(bookmark, lastSyncDate); });
                     highlights = filteredDiigoBookmarks.map(convertDiigoBookmarksToHighlights).reduce(function (array, currentValue) { return array.concat(currentValue); }, []);
                     if (!highlights.length)
                         return [2 /*return*/, fs_1.promises.writeFile(timestampFileName, currentSyncDate)];
-                    (0, node_fetch_1.default)('https://readwise.io/api/v2/highlights/', {
-                        method: 'POST',
-                        headers: {
-                            Authorization: "Token " + readwiseToken,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ highlights: highlights })
-                    });
+                    return [4 /*yield*/, (0, node_fetch_1.default)('https://readwise.io/api/v2/highlights/', {
+                            method: 'POST',
+                            headers: {
+                                Authorization: "Token " + readwiseToken,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ highlights: highlights })
+                        })];
+                case 3:
+                    readwiseResponse = _b.sent();
+                    return [4 /*yield*/, readwiseResponse.json()];
+                case 4:
+                    readwiseBody = _b.sent();
+                    console.log(readwiseBody);
                     return [2 /*return*/, fs_1.promises.writeFile(timestampFileName, currentSyncDate)];
             }
         });
@@ -203,6 +243,7 @@ var diigoApiKey = core.getInput('diigoApiKey');
 var diigoUsername = core.getInput('diigoUsername');
 var diigoPassword = core.getInput('diigoPassword');
 var readwiseToken = core.getInput('readwiseToken');
+var diigoFilterTags = core.getInput('diigoFilterTags');
 var timestampFileName = core.getInput('timestampFileName');
 function run() {
     return __awaiter(this, void 0, void 0, function () {
@@ -216,6 +257,7 @@ function run() {
                             diigoApiKey: diigoApiKey,
                             diigoUsername: diigoUsername,
                             diigoPassword: diigoPassword,
+                            diigoFilterTags: diigoFilterTags,
                             readwiseToken: readwiseToken,
                             timestampFileName: timestampFileName
                         })];

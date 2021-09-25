@@ -6,6 +6,7 @@ const diigoApiKey: string = core.getInput('diigoApiKey');
 const diigoUsername: string = core.getInput('diigoUsername');
 const diigoPassword: string = core.getInput('diigoPassword');
 const readwiseToken: string = core.getInput('readwiseToken');
+const diigoFilterTags: string = core.getInput('diigoFilterTags');
 const timestampFileName = core.getInput('timestampFileName');
 
 async function run(): Promise<void> {
@@ -15,6 +16,7 @@ async function run(): Promise<void> {
       diigoApiKey,
       diigoUsername,
       diigoPassword,
+      diigoFilterTags,
       readwiseToken,
       timestampFileName
     })
