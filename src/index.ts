@@ -12,11 +12,11 @@ const convertDiigoBookmarksToHighlights = (bookmark: DiigoBookmark): ReadwiseHig
 };
 
 readFile('./lastSync.txt', 'utf-8').then((lastSync) => {
-  console.log(new Date(lastSync));
+  // console.log(new Date(lastSync));
   // const lastSyncDate = new Date(lastSync);
-  fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${process.env.API_KEY}&count=100&user=${process.env.USERNAME}&filter=all&sort=1&tags=test`, {
+  fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${process.env.DIIGO_API_KEY}&count=100&user=${process.env.DIIGO_USERNAME}&filter=all&sort=1&tags=test`, {
     headers: {
-      Authorization: `Basic ${base64.encode(`${process.env.USERNAME}:${process.env.PASSWORD}`)}`,
+      Authorization: `Basic ${base64.encode(`${process.env.DIIGO_USERNAME}:${process.env.DIIGO_PASSWORD}`)}`,
     },
   }).then(async (response) => {
     const bookmarks: DiigoBookmark[] = await response.json();

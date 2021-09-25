@@ -1,0 +1,13 @@
+name: 'Sync Diigo Highlights to Readwise'
+# Here we define the inputs, which can be set
+# from the workflow file and are consumed in our code
+env: # Or as an environment variable
+  DIIGO_API_KEY: ${{ secrets.DIIGO_API_KEY }}
+  DIIGO_USERNAME: ${{ secrets.DIIGO_USERNAME }}
+  DIIGO_PASSWORD: ${{ secrets.DIIGO_PASSWORD }}
+  READWISE_TOKEN: ${{ secrets.READWISE_TOKEN }}
+# We specify the created dist/index.js file
+# as the entrypoint of our action
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

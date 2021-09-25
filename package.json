@@ -2,12 +2,14 @@
   "name": "diiggo-to-readwise",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
+    "build-package": "npm run build && npm run package",
     "build-watch": "tsc -w",
     "start-watch": "nodemon dist/index.js",
+    "package": "ncc build --source-map --license licenses.txt",
     "dev": "concurrently \"npm:build-watch\" \"npm:start-watch\""
   },
   "repository": {
@@ -35,6 +37,7 @@
     "@types/redis": "^2.8.28",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
+    "@vercel/ncc": "^0.31.1",
     "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.2",
