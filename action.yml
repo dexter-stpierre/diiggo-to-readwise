@@ -14,6 +14,9 @@ inputs:
   readwiseToken:
     description: 'Token used to access Readwise API'
     required: true
+  diigoFilterTags:
+    description: Comma seperated list of tags that you would like to sync to Readwise. Leave blank to sync all highlights. Example "readwise,favorite"
+    required: false
   timestampFileName:
     description: 'Name of file in your repo to save last synced timestamp to'
     default: lastSync.txt

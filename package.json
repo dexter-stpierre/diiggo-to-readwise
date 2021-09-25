@@ -4,11 +4,11 @@
   "description": "",
   "main": "lib/main.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node lib/index.js",
     "build": "tsc",
     "build-watch": "tsc -w",
     "clean-build-artifacts": "rm -rf lib dist",
-    "start-watch": "nodemon dist/index.js",
+    "start-watch": "nodemon lib/index.js",
     "package": "ncc build --source-map --license licenses.txt",
     "prep-release": "npm run clean-build-artifacts && npm run build && npm run package",
     "dev": "concurrently \"npm:build-watch\" \"npm:start-watch\""

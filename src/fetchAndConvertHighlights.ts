@@ -28,6 +28,7 @@ interface fetchAndConvertHighlightsArgObject {
   diigoApiKey: string;
   diigoUsername: string;
   diigoPassword: string;
+  diigoFilterTags: string;
   readwiseToken: string;
   timestampFileName: string;
 }
@@ -36,12 +37,13 @@ export const fetchAndConvertHighlights = async ({
   diigoApiKey,
   diigoUsername,
   diigoPassword,
+  diigoFilterTags,
   readwiseToken,
   timestampFileName,
 }: fetchAndConvertHighlightsArgObject) => {
   const currentSyncDate = Date();
   const lastSyncDate = await getLastSyncDateFromFile(timestampFileName)
-  const diigoResponse = await fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=test`, {
+  const diigoResponse = await fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=${diigoFilterTags}`, {
     headers: {
       Authorization: `Basic ${base64.encode(`${diigoUsername}:${diigoPassword}`)}`,
     },
@@ -50,7 +52,7 @@ export const fetchAndConvertHighlights = async ({
   const filteredDiigoBookmarks = diigoBookmarks.filter(bookmark => shouldBookmarkSync(bookmark, lastSyncDate));
   const highlights: ReadwiseHighlight[] = filteredDiigoBookmarks.map(convertDiigoBookmarksToHighlights).reduce((array, currentValue) => array.concat(currentValue), []);
   if (!highlights.length) return fsPromises.writeFile(timestampFileName, currentSyncDate)
-  fetch('https://readwise.io/api/v2/highlights/', {
+  const readwiseResponse = await fetch('https://readwise.io/api/v2/highlights/', {
     method: 'POST',
     headers: {
       Authorization: `Token ${readwiseToken}`,
@@ -58,5 +60,7 @@ export const fetchAndConvertHighlights = async ({
     },
     body: JSON.stringify({ highlights })
   })
+  const readwiseBody = await readwiseResponse.json();
+  console.log(readwiseBody);
   return fsPromises.writeFile(timestampFileName, currentSyncDate)
 }
