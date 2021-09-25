@@ -9,13 +9,17 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.convertDiigoHighlightToReadwise = void 0;
 // eslint-disable-next-line max-len
-var convertDiigoHighlightToReadwise = function (diigoHighlight, diigoBookmark) { return ({
-    text: diigoHighlight.content,
-    title: diigoBookmark.title,
-    source_url: diigoBookmark.url,
-    note: diigoHighlight.comments.map(function (comment) { return comment.content; }).join(' '),
-    highlighted_at: diigoHighlight.created_at,
-}); };
+var convertDiigoHighlightToReadwise = function (diigoHighlight, diigoBookmark) {
+    var highlight = {
+        text: diigoHighlight.content,
+        title: diigoBookmark.title,
+        source_url: diigoBookmark.url,
+        highlighted_at: diigoHighlight.created_at,
+    };
+    if (diigoHighlight.comments.length)
+        highlight.note = diigoHighlight.comments.map(function (comment) { return comment.content; }).join(' ');
+    return highlight;
+};
 exports.convertDiigoHighlightToReadwise = convertDiigoHighlightToReadwise;
 
 
@@ -78,8 +82,7 @@ var getLastSyncDateFromFile = function (timestampFileName) {
     return fs_1.promises.readFile(timestampFileName, 'utf-8').then(function (lastSync) {
         var lastSyncDate = new Date(lastSync);
         return lastSyncDate;
-    }).catch(function (error) {
-        console.log(error);
+    }).catch(function () {
         return undefined;
     });
 };

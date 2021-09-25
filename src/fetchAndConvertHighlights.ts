@@ -12,8 +12,7 @@ const getLastSyncDateFromFile = (timestampFileName: string) => {
   return fsPromises.readFile(timestampFileName, 'utf-8').then((lastSync) => {
     const lastSyncDate = new Date(lastSync);
     return lastSyncDate
-  }).catch(error => {
-    console.log(error);
+  }).catch(() => {
     return undefined;
   })
 }
