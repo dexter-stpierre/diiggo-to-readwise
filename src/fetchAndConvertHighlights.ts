@@ -25,7 +25,6 @@ export const fetchAndConvertHighlights = ({
 }: fetchAndConvertHighlightsArgObject) => {
   const currentSyncDate = Date();
   return fsPromises.readFile(timestampFileName, 'utf-8').then((lastSync) => {
-    console.log(new Date(lastSync));
     const lastSyncDate = new Date(lastSync);
     return lastSyncDate
   }).catch(error => {
@@ -37,6 +36,7 @@ export const fetchAndConvertHighlights = ({
       const DiigoUpdatedAt = new Date(bookmark.updated_at);
       return DiigoUpdatedAt > lastSyncDate;
     }
+
     return fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=test`, {
       headers: {
         Authorization: `Basic ${base64.encode(`${diigoUsername}:${diigoPassword}`)}`,
@@ -45,8 +45,9 @@ export const fetchAndConvertHighlights = ({
       const bookmarks: DiigoBookmark[] = await response.json();
       return bookmarks.filter(shouldBookmarkSync);
     }).then((bookmarks) => {
-      // convert array of arrays to a single array
-      const highlights: ReadwiseHighlight[] = bookmarks.map(convertDiigoBookmarksToHighlights).reduce((array, currentValue) => array.concat(currentValue));
+      const highlights: ReadwiseHighlight[] = bookmarks.map(convertDiigoBookmarksToHighlights)
+        .reduce((array, currentValue) => array.concat(currentValue), []);
+
       return highlights;
     })
       .then(highlights => {

@@ -78,7 +78,6 @@ var fetchAndConvertHighlights = function (_a) {
     var diigoApiKey = _a.diigoApiKey, diigoUsername = _a.diigoUsername, diigoPassword = _a.diigoPassword, readwiseToken = _a.readwiseToken, timestampFileName = _a.timestampFileName;
     var currentSyncDate = Date();
     return fs_1.promises.readFile(timestampFileName, 'utf-8').then(function (lastSync) {
-        console.log(new Date(lastSync));
         var lastSyncDate = new Date(lastSync);
         return lastSyncDate;
     }).catch(function (error) {
@@ -106,8 +105,8 @@ var fetchAndConvertHighlights = function (_a) {
                 }
             });
         }); }).then(function (bookmarks) {
-            // convert array of arrays to a single array
-            var highlights = bookmarks.map(convertDiigoBookmarksToHighlights).reduce(function (array, currentValue) { return array.concat(currentValue); });
+            var highlights = bookmarks.map(convertDiigoBookmarksToHighlights)
+                .reduce(function (array, currentValue) { return array.concat(currentValue); }, []);
             return highlights;
         })
             .then(function (highlights) {
