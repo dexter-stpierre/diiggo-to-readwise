@@ -8,4 +8,5 @@ fetchAndConvertHighlights({
   diigoUsername: process.env.DIIGO_USERNAME || '',
   diigoPassword: process.env.DIIGO_PASSWORD || '',
   readwiseToken: process.env.READWISE_TOKEN || '',
+  timestampFileName: '../lastSync.txt',
 })

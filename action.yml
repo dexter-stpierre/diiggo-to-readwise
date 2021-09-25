@@ -3,17 +3,37 @@ author: 'Dexter St Pierre'
 description: 'A workflow to sync your highlights from Diigo to Readwise'
 inputs:
   diigoApiKey:
-    description: "Key used to access Diigo API"
+    description: 'Key used to access Diigo API'
     required: true
   diigoUsername:
-    description: "Username used to login to your Diigo account"
+    description: 'Username used to login to your Diigo account'
     required: true
   diigoPassword:
-    description: "Password used to login to your Diigo account"
+    description: 'Password used to login to your Diigo account'
     required: true
   readwiseToken:
-    description: "Token used to access Readwise API"
+    description: 'Token used to access Readwise API'
     required: true
+  timestampFileName:
+    description: 'Name of file in your repo to save last synced timestamp to'
+    default: lastSync.txt
+    required: false
+  lastSyncFileCommitMessage:
+    description: 'Message to attach to commit when commiting last sync file'
+    default: Commit new last sync file
+    required: false
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v2
+    - uses: .github/actions/sync
+      with:
+        diigoApiKey: ${{ inputs.diigoApiKey }}
+        diigoUsername: ${{ inputs.diigoUsername }}
+        diigoPassword: ${{ inputs.diigoPassword }}
+        readwiseToken: ${{ inputs.readwiseToken }}
+        timestampFileName: ${{ inputs.timestampFileName }}
+    - name: Save new last sync file
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: ${{ inputs.lastSyncFileCommitMessage }}

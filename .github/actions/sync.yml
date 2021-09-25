@@ -1,0 +1,22 @@
+name: 'Sync Diigo Highlights to Readwise'
+author: 'Dexter St Pierre'
+description: 'A workflow to sync your highlights from Diigo to Readwise'
+inputs:
+  diigoApiKey:
+    description: "Key used to access Diigo API"
+    required: true
+  diigoUsername:
+    description: "Username used to login to your Diigo account"
+    required: true
+  diigoPassword:
+    description: "Password used to login to your Diigo account"
+    required: true
+  readwiseToken:
+    description: "Token used to access Readwise API"
+    required: true
+  timestampFileName:
+    description: "Name of file in your repo to save last synced timestamp to"
+    defaultl: lastSync.txt
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
