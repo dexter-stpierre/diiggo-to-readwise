@@ -74,55 +74,56 @@ var convertDiigoHighlightToReadwiseHighlight_1 = __nccwpck_require__(607);
 var convertDiigoBookmarksToHighlights = function (bookmark) {
     return bookmark.annotations.map(function (highlight) { return (0, convertDiigoHighlightToReadwiseHighlight_1.convertDiigoHighlightToReadwise)(highlight, bookmark); });
 };
-var fetchAndConvertHighlights = function (_a) {
-    var diigoApiKey = _a.diigoApiKey, diigoUsername = _a.diigoUsername, diigoPassword = _a.diigoPassword, readwiseToken = _a.readwiseToken, timestampFileName = _a.timestampFileName;
-    var currentSyncDate = Date();
+var getLastSyncDateFromFile = function (timestampFileName) {
     return fs_1.promises.readFile(timestampFileName, 'utf-8').then(function (lastSync) {
         var lastSyncDate = new Date(lastSync);
         return lastSyncDate;
     }).catch(function (error) {
         console.log(error);
         return undefined;
-    }).then(function (lastSyncDate) {
-        var shouldBookmarkSync = function (bookmark) {
-            if (!lastSyncDate)
-                return true;
-            var DiigoUpdatedAt = new Date(bookmark.updated_at);
-            return DiigoUpdatedAt > lastSyncDate;
-        };
-        return (0, node_fetch_1.default)("https://secure.diigo.com/api/v2/bookmarks?key=" + diigoApiKey + "&count=100&user=" + diigoUsername + "&filter=all&sort=1&tags=test", {
-            headers: {
-                Authorization: "Basic " + base_64_1.default.encode(diigoUsername + ":" + diigoPassword),
-            },
-        }).then(function (response) { return __awaiter(void 0, void 0, void 0, function () {
-            var bookmarks;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, response.json()];
-                    case 1:
-                        bookmarks = _a.sent();
-                        return [2 /*return*/, bookmarks.filter(shouldBookmarkSync)];
-                }
-            });
-        }); }).then(function (bookmarks) {
-            var highlights = bookmarks.map(convertDiigoBookmarksToHighlights)
-                .reduce(function (array, currentValue) { return array.concat(currentValue); }, []);
-            return highlights;
-        })
-            .then(function (highlights) {
-            return (0, node_fetch_1.default)('https://readwise.io/api/v2/highlights/', {
-                method: 'POST',
-                headers: {
-                    Authorization: "Token " + readwiseToken,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ highlights: highlights })
-            }).then(function (response) {
-                return response.json();
-            }).then(function (response) {
-                console.log(response);
-                return fs_1.promises.writeFile(timestampFileName, currentSyncDate);
-            });
+    });
+};
+var shouldBookmarkSync = function (bookmark, lastSyncDate) {
+    if (!lastSyncDate)
+        return true;
+    var DiigoUpdatedAt = new Date(bookmark.updated_at);
+    return DiigoUpdatedAt > lastSyncDate;
+};
+var fetchAndConvertHighlights = function (_a) {
+    var diigoApiKey = _a.diigoApiKey, diigoUsername = _a.diigoUsername, diigoPassword = _a.diigoPassword, readwiseToken = _a.readwiseToken, timestampFileName = _a.timestampFileName;
+    return __awaiter(void 0, void 0, void 0, function () {
+        var currentSyncDate, lastSyncDate, diigoResponse, diigoBookmarks, filteredDiigoBookmarks, highlights;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    currentSyncDate = Date();
+                    return [4 /*yield*/, getLastSyncDateFromFile(timestampFileName)];
+                case 1:
+                    lastSyncDate = _b.sent();
+                    return [4 /*yield*/, (0, node_fetch_1.default)("https://secure.diigo.com/api/v2/bookmarks?key=" + diigoApiKey + "&count=100&user=" + diigoUsername + "&filter=all&sort=1&tags=test", {
+                            headers: {
+                                Authorization: "Basic " + base_64_1.default.encode(diigoUsername + ":" + diigoPassword),
+                            },
+                        })];
+                case 2:
+                    diigoResponse = _b.sent();
+                    return [4 /*yield*/, diigoResponse.json()];
+                case 3:
+                    diigoBookmarks = _b.sent();
+                    filteredDiigoBookmarks = diigoBookmarks.filter(function (bookmark) { return shouldBookmarkSync(bookmark, lastSyncDate); });
+                    highlights = filteredDiigoBookmarks.map(convertDiigoBookmarksToHighlights).reduce(function (array, currentValue) { return array.concat(currentValue); }, []);
+                    if (!highlights.length)
+                        return [2 /*return*/, fs_1.promises.writeFile(timestampFileName, currentSyncDate)];
+                    (0, node_fetch_1.default)('https://readwise.io/api/v2/highlights/', {
+                        method: 'POST',
+                        headers: {
+                            Authorization: "Token " + readwiseToken,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ highlights: highlights })
+                    });
+                    return [2 /*return*/, fs_1.promises.writeFile(timestampFileName, currentSyncDate)];
+            }
         });
     });
 };

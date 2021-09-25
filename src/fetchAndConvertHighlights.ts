@@ -8,6 +8,22 @@ const convertDiigoBookmarksToHighlights = (bookmark: DiigoBookmark): ReadwiseHig
   return bookmark.annotations.map((highlight) => convertDiigoHighlightToReadwise(highlight, bookmark));
 };
 
+const getLastSyncDateFromFile = (timestampFileName: string) => {
+  return fsPromises.readFile(timestampFileName, 'utf-8').then((lastSync) => {
+    const lastSyncDate = new Date(lastSync);
+    return lastSyncDate
+  }).catch(error => {
+    console.log(error);
+    return undefined;
+  })
+}
+
+const shouldBookmarkSync = (bookmark: DiigoBookmark, lastSyncDate: Date | undefined) => {
+  if (!lastSyncDate) return true;
+  const DiigoUpdatedAt = new Date(bookmark.updated_at);
+  return DiigoUpdatedAt > lastSyncDate;
+}
+
 interface fetchAndConvertHighlightsArgObject {
   diigoApiKey: string;
   diigoUsername: string;
@@ -16,7 +32,7 @@ interface fetchAndConvertHighlightsArgObject {
   timestampFileName: string;
 }
 
-export const fetchAndConvertHighlights = ({
+export const fetchAndConvertHighlights = async ({
   diigoApiKey,
   diigoUsername,
   diigoPassword,
@@ -24,46 +40,23 @@ export const fetchAndConvertHighlights = ({
   timestampFileName,
 }: fetchAndConvertHighlightsArgObject) => {
   const currentSyncDate = Date();
-  return fsPromises.readFile(timestampFileName, 'utf-8').then((lastSync) => {
-    const lastSyncDate = new Date(lastSync);
-    return lastSyncDate
-  }).catch(error => {
-    console.log(error);
-    return undefined;
-  }).then(lastSyncDate => {
-    const shouldBookmarkSync = (bookmark: DiigoBookmark) => {
-      if (!lastSyncDate) return true;
-      const DiigoUpdatedAt = new Date(bookmark.updated_at);
-      return DiigoUpdatedAt > lastSyncDate;
-    }
-
-    return fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=test`, {
-      headers: {
-        Authorization: `Basic ${base64.encode(`${diigoUsername}:${diigoPassword}`)}`,
-      },
-    }).then(async (response) => {
-      const bookmarks: DiigoBookmark[] = await response.json();
-      return bookmarks.filter(shouldBookmarkSync);
-    }).then((bookmarks) => {
-      const highlights: ReadwiseHighlight[] = bookmarks.map(convertDiigoBookmarksToHighlights)
-        .reduce((array, currentValue) => array.concat(currentValue), []);
-
-      return highlights;
-    })
-      .then(highlights => {
-        return fetch('https://readwise.io/api/v2/highlights/', {
-          method: 'POST',
-          headers: {
-            Authorization: `Token ${readwiseToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ highlights })
-        }).then(response => {
-          return response.json()
-        }).then(response => {
-          console.log(response)
-          return fsPromises.writeFile(timestampFileName, currentSyncDate)
-        })
-      })
+  const lastSyncDate = await getLastSyncDateFromFile(timestampFileName)
+  const diigoResponse = await fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=test`, {
+    headers: {
+      Authorization: `Basic ${base64.encode(`${diigoUsername}:${diigoPassword}`)}`,
+    },
   })
+  const diigoBookmarks: DiigoBookmark[] = await diigoResponse.json();
+  const filteredDiigoBookmarks = diigoBookmarks.filter(bookmark => shouldBookmarkSync(bookmark, lastSyncDate));
+  const highlights: ReadwiseHighlight[] = filteredDiigoBookmarks.map(convertDiigoBookmarksToHighlights).reduce((array, currentValue) => array.concat(currentValue), []);
+  if (!highlights.length) return fsPromises.writeFile(timestampFileName, currentSyncDate)
+  fetch('https://readwise.io/api/v2/highlights/', {
+    method: 'POST',
+    headers: {
+      Authorization: `Token ${readwiseToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ highlights })
+  })
+  return fsPromises.writeFile(timestampFileName, currentSyncDate)
 }
