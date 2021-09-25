@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import base64 from 'base-64';
-import { readFile } from 'fs/promises';
+import { promises as fsPromises } from 'fs';
 import { DiigoBookmark, ReadwiseHighlight } from './types';
 import { convertDiigoHighlightToReadwise } from './convertDiigoHighlightToReadwiseHighlight';
 
@@ -21,7 +21,7 @@ export const fetchAndConvertHighlights = ({
   diigoPassword,
   readwiseToken,
 }: fetchAndConvertHighlightsArgObject) => {
-  readFile('./lastSync.txt', 'utf-8').then((lastSync) => {
+  fsPromises.readFile('./lastSync.txt', 'utf-8').then((lastSync) => {
     // console.log(new Date(lastSync));
     // const lastSyncDate = new Date(lastSync);
     fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=test`, {

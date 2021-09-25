@@ -15,5 +15,5 @@ inputs:
     description: "Token used to access Readwise API"
     required: true
 runs:
-  using: 'node16'
+  using: 'node12'
   main: 'dist/index.js'
