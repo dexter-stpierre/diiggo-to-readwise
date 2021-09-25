@@ -10,7 +10,7 @@ const readwiseToken: string = core.getInput('readwiseToken');
 async function run(): Promise<void> {
   try {
     core.setSecret(base64.encode(`${diigoUsername}:${diigoPassword}`));
-    fetchAndConvertHighlights({
+    await fetchAndConvertHighlights({
       diigoApiKey,
       diigoUsername,
       diigoPassword,

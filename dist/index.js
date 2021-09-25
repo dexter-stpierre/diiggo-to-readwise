@@ -76,10 +76,10 @@ var convertDiigoBookmarksToHighlights = function (bookmark) {
 };
 var fetchAndConvertHighlights = function (_a) {
     var diigoApiKey = _a.diigoApiKey, diigoUsername = _a.diigoUsername, diigoPassword = _a.diigoPassword, readwiseToken = _a.readwiseToken;
-    fs_1.promises.readFile('./lastSync.txt', 'utf-8').then(function (lastSync) {
+    return fs_1.promises.readFile('./lastSync.txt', 'utf-8').then(function (lastSync) {
         // console.log(new Date(lastSync));
         // const lastSyncDate = new Date(lastSync);
-        (0, node_fetch_1.default)("https://secure.diigo.com/api/v2/bookmarks?key=" + diigoApiKey + "&count=100&user=" + diigoUsername + "&filter=all&sort=1&tags=test", {
+        return (0, node_fetch_1.default)("https://secure.diigo.com/api/v2/bookmarks?key=" + diigoApiKey + "&count=100&user=" + diigoUsername + "&filter=all&sort=1&tags=test", {
             headers: {
                 Authorization: "Basic " + base_64_1.default.encode(diigoUsername + ":" + diigoPassword),
             },
@@ -192,20 +192,27 @@ var diigoPassword = core.getInput('diigoPassword');
 var readwiseToken = core.getInput('readwiseToken');
 function run() {
     return __awaiter(this, void 0, void 0, function () {
+        var error_1;
         return __generator(this, function (_a) {
-            try {
-                core.setSecret(base_64_1.default.encode(diigoUsername + ":" + diigoPassword));
-                (0, fetchAndConvertHighlights_1.fetchAndConvertHighlights)({
-                    diigoApiKey: diigoApiKey,
-                    diigoUsername: diigoUsername,
-                    diigoPassword: diigoPassword,
-                    readwiseToken: readwiseToken,
-                });
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    core.setSecret(base_64_1.default.encode(diigoUsername + ":" + diigoPassword));
+                    return [4 /*yield*/, (0, fetchAndConvertHighlights_1.fetchAndConvertHighlights)({
+                            diigoApiKey: diigoApiKey,
+                            diigoUsername: diigoUsername,
+                            diigoPassword: diigoPassword,
+                            readwiseToken: readwiseToken,
+                        })];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_1 = _a.sent();
+                    core.setFailed(error_1);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
-            catch (error) {
-                core.setFailed(error);
-            }
-            return [2 /*return*/];
         });
     });
 }
