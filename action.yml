@@ -18,26 +18,6 @@ inputs:
     description: 'Name of file in your repo to save last synced timestamp to'
     default: lastSync.txt
     required: false
-  lastSyncFileCommitMessage:
-    description: 'Message to attach to commit when commiting last sync file'
-    default: Commit new last sync file
-    required: false
 runs:
   using: 'composite'
-  steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '12'
-    - run: dist/index.js
-      shell: bash
-      # with:
-      #   diigoApiKey: ${{ inputs.diigoApiKey }}
-      #   diigoUsername: ${{ inputs.diigoUsername }}
-      #   diigoPassword: ${{ inputs.diigoPassword }}
-      #   readwiseToken: ${{ inputs.readwiseToken }}
-      #   timestampFileName: ${{ inputs.timestampFileName }}
-    - name: Save new last sync file
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: ${{ inputs.lastSyncFileCommitMessage }}
+  main: dist/index.js
