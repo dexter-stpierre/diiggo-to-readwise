@@ -179,8 +179,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var core = __importStar(__nccwpck_require__(186));
+var base_64_1 = __importDefault(__nccwpck_require__(848));
 var fetchAndConvertHighlights_1 = __nccwpck_require__(432);
 var diigoApiKey = core.getInput('diigoApiKey');
 var diigoUsername = core.getInput('diigoUsername');
@@ -190,6 +194,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             try {
+                core.setSecret(base_64_1.default.encode(diigoUsername + ":" + diigoPassword));
                 (0, fetchAndConvertHighlights_1.fetchAndConvertHighlights)({
                     diigoApiKey: diigoApiKey,
                     diigoUsername: diigoUsername,
