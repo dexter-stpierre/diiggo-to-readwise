@@ -2,14 +2,15 @@
   "name": "diiggo-to-readwise",
   "version": "1.0.0",
   "description": "",
-  "main": "lib/index.js",
+  "main": "lib/main.js",
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "build-package": "npm run build && npm run package",
     "build-watch": "tsc -w",
+    "clean-build-artifacts": "rm -rf lib dist",
     "start-watch": "nodemon dist/index.js",
     "package": "ncc build --source-map --license licenses.txt",
+    "prep-release": "npm run clean-build-artifacts && npm run build && npm run package",
     "dev": "concurrently \"npm:build-watch\" \"npm:start-watch\""
   },
   "repository": {
