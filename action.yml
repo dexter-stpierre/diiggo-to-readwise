@@ -31,12 +31,12 @@ runs:
         node-version: '12'
     - run: dist/index.js
       shell: bash
-      with:
-        diigoApiKey: ${{ inputs.diigoApiKey }}
-        diigoUsername: ${{ inputs.diigoUsername }}
-        diigoPassword: ${{ inputs.diigoPassword }}
-        readwiseToken: ${{ inputs.readwiseToken }}
-        timestampFileName: ${{ inputs.timestampFileName }}
+      # with:
+      #   diigoApiKey: ${{ inputs.diigoApiKey }}
+      #   diigoUsername: ${{ inputs.diigoUsername }}
+      #   diigoPassword: ${{ inputs.diigoPassword }}
+      #   readwiseToken: ${{ inputs.readwiseToken }}
+      #   timestampFileName: ${{ inputs.timestampFileName }}
     - name: Save new last sync file
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
