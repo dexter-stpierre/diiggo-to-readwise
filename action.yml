@@ -26,7 +26,7 @@ runs:
   using: 'composite'
   steps:
     - uses: actions/checkout@v2
-    - uses: .github/actions/sync
+    - uses: ./.github/actions/sync
       with:
         diigoApiKey: ${{ inputs.diigoApiKey }}
         diigoUsername: ${{ inputs.diigoUsername }}
