@@ -21,34 +21,34 @@ export const fetchAndConvertHighlights = ({
   diigoPassword,
   readwiseToken,
 }: fetchAndConvertHighlightsArgObject) => {
-  return fsPromises.readFile('./lastSync.txt', 'utf-8').then((lastSync) => {
-    // console.log(new Date(lastSync));
-    // const lastSyncDate = new Date(lastSync);
-    return fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=test`, {
-      headers: {
-        Authorization: `Basic ${base64.encode(`${diigoUsername}:${diigoPassword}`)}`,
-      },
-    }).then(async (response) => {
-      const bookmarks: DiigoBookmark[] = await response.json();
-      return bookmarks;
-    }).then((bookmarks) => {
-      // convert array of arrays to a single array
-      const highlights: ReadwiseHighlight[] = bookmarks.map(convertDiigoBookmarksToHighlights).reduce((array, currentValue) => array.concat(currentValue));
-      return highlights;
-    })
-      .then(highlights => {
-        return fetch('https://readwise.io/api/v2/highlights/', {
-          method: 'POST',
-          headers: {
-            Authorization: `Token ${readwiseToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ highlights })
-        }).then(response => {
-          return response.json()
-        }).then(response => {
-          console.log(response)
-        })
+  // return fsPromises.readFile('./lastSync.txt', 'utf-8').then((lastSync) => {
+  // console.log(new Date(lastSync));
+  // const lastSyncDate = new Date(lastSync);
+  return fetch(`https://secure.diigo.com/api/v2/bookmarks?key=${diigoApiKey}&count=100&user=${diigoUsername}&filter=all&sort=1&tags=test`, {
+    headers: {
+      Authorization: `Basic ${base64.encode(`${diigoUsername}:${diigoPassword}`)}`,
+    },
+  }).then(async (response) => {
+    const bookmarks: DiigoBookmark[] = await response.json();
+    return bookmarks;
+  }).then((bookmarks) => {
+    // convert array of arrays to a single array
+    const highlights: ReadwiseHighlight[] = bookmarks.map(convertDiigoBookmarksToHighlights).reduce((array, currentValue) => array.concat(currentValue));
+    return highlights;
+  })
+    .then(highlights => {
+      return fetch('https://readwise.io/api/v2/highlights/', {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${readwiseToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ highlights })
+      }).then(response => {
+        return response.json()
+      }).then(response => {
+        console.log(response)
       })
-  });
+    })
+  // });
 }
