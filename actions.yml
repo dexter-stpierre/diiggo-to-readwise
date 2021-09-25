@@ -1,8 +1,9 @@
 name: 'Sync Diigo Highlights to Readwise'
-# Here we define the inputs, which can be set
-# from the workflow file and are consumed in our code
-env: # Or as an environment variable
-  DIIGO_API_KEY: ${{ secrets.DIIGO_API_KEY }}
+author: 'Dexter St Pierre'
+description: 'A workflow to sync your highlights from Diigo to Readwise'
+inputs:
+  DIIGO_API_KEY:
+    default: ${{ secrets.DIIGO_API_KEY }}
   DIIGO_USERNAME: ${{ secrets.DIIGO_USERNAME }}
   DIIGO_PASSWORD: ${{ secrets.DIIGO_PASSWORD }}
   READWISE_TOKEN: ${{ secrets.READWISE_TOKEN }}
