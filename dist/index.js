@@ -69,14 +69,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.fetchAndConvertHighlights = void 0;
 var node_fetch_1 = __importDefault(__nccwpck_require__(467));
 var base_64_1 = __importDefault(__nccwpck_require__(848));
-var promises_1 = __nccwpck_require__(225);
+var fs_1 = __nccwpck_require__(747);
 var convertDiigoHighlightToReadwiseHighlight_1 = __nccwpck_require__(607);
 var convertDiigoBookmarksToHighlights = function (bookmark) {
     return bookmark.annotations.map(function (highlight) { return (0, convertDiigoHighlightToReadwiseHighlight_1.convertDiigoHighlightToReadwise)(highlight, bookmark); });
 };
 var fetchAndConvertHighlights = function (_a) {
     var diigoApiKey = _a.diigoApiKey, diigoUsername = _a.diigoUsername, diigoPassword = _a.diigoPassword, readwiseToken = _a.readwiseToken;
-    (0, promises_1.readFile)('./lastSync.txt', 'utf-8').then(function (lastSync) {
+    fs_1.promises.readFile('./lastSync.txt', 'utf-8').then(function (lastSync) {
         // console.log(new Date(lastSync));
         // const lastSyncDate = new Date(lastSync);
         (0, node_fetch_1.default)("https://secure.diigo.com/api/v2/bookmarks?key=" + diigoApiKey + "&count=100&user=" + diigoUsername + "&filter=all&sort=1&tags=test", {
@@ -2562,14 +2562,6 @@ module.exports = eval("require")("encoding");
 
 "use strict";
 module.exports = require("fs");
-
-/***/ }),
-
-/***/ 225:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");
 
 /***/ }),
 
