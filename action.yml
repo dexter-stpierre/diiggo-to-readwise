@@ -3,13 +3,17 @@ author: 'Dexter St Pierre'
 description: 'A workflow to sync your highlights from Diigo to Readwise'
 inputs:
   diigoApiKey:
-    default: ${{ secrets.DIIGO_API_KEY }}
+    description: "Key used to access Diigo API"
+    required: true
   diigoUsername:
-    default: ${{ secrets.DIIGO_USERNAME }}
+    description: "Username used to login to your Diigo account"
+    required: true
   diigoPassword:
-    default: ${{ secrets.DIIGO_PASSWORD }}
+    description: "Password used to login to your Diigo account"
+    required: true
   readwiseToken:
-    default: ${{ secrets.READWISE_TOKEN }}
+    description: "Token used to access Readwise API"
+    required: true
 runs:
   using: 'node12'
   main: 'dist/main.js'
