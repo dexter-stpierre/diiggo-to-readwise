@@ -92,7 +92,7 @@ I am so glad that my work has benefitted you! Feel free to follow/dm me on [Twit
 
 ## Building on the backs of others
 
-I wanted to give a shout out to a few peope:
+I wanted to give a shout out to a few people:
 - Readwise and Diigo for making great tools that are worth building an ecosystem of tools around
 - Github for their awesome docs and examples that always had the answers when I needed them
 - [Matthieu Bizien](https://twitter.com/Matthieu_Bizien) who wrote a github action that automatically backsup Roam. Gave me the idea of this approach, and copied many ideas from his workflow
