@@ -82,6 +82,10 @@ If you would like to sync your highlights outside of your schedule click "Sync D
 
 First, remember to breathe. This isn't an easy thing to set up, especially if it is your first time. Feel free to just make another new repo and re-follow the instructions if you believe you missed a step. If that doesn't work feel free to [Submit an issue](https://github.com/dexter-stpierre/diiggo-to-readwise/issues/new) or reach out to me on [Twitter](https://twitter.com/dexthe_dev)
 
+### I'm missing some of my highlights, what do I do?
+
+Just delete the lastSync.txt file and either manually run a sync, or simply wait for the next auto sync to run and it will sync over all of your highlights.
+
 ## What's next for this project?
 
 Check out the v1.0.0 [project board](https://github.com/dexter-stpierre/diiggo-to-readwise/projects/1) for the list of upgrades that are planned for the first major version. If you have some programming chops, or want to get some practice contributing to open source projects feel free to volunteer for any of those tasks! Also please submit a PR if you notice any errors or have improvements to the code.
