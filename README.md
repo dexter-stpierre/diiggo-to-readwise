@@ -25,7 +25,6 @@ These are the steps for setting up the sync on a Github action
 1. Get a [Diigo API key](https://www.diigo.com/api_dev/docs#section-key)
   - Name it something that tells you that you are using it for this
 2. Get a [Readwise Access Token](https://readwise.io/access_token)
-  - You won't be able to get back to this one, so make sure you keep it somewhere safe
 3. [Create a new repository](https://docs.github.com/en/get-started/quickstart/create-a-repo)
 4. Follow [this](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) guide to add secrets named "DIIGO_API_KEY", "DIIGO_USERNAME", "DIIGO_PASSWORD", and "READWISE_TOKEN" with their corresponding information
 5. Create a file in your repo named ".github/workflows/main.yml".
